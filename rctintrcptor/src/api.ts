@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Create an Axios instance
 const api = axios.create({
@@ -19,10 +20,35 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => {
+ function(error) {
     // Handle request errors here
     return Promise.reject(error);
   }
 );
+
+api.interceptors.response.use(
+    (response) => {
+      // If the response is successful, just return the data
+      alert(response.data.email)
+      return response;
+    },
+    (error) => {
+      const navigate = useNavigate(); // For navigating to login if token expired
+  
+      // Check if the error is due to an unauthorized (401) response
+      if (error.response && error.response.status === 401) {
+        // Handle 401 errors (unauthorized) - Token expired or invalid
+  
+        // Optionally, remove the token and redirect to login page
+        localStorage.removeItem('token'); // Remove token if expired/invalid
+        navigate('/login'); // Redirect to login page
+  
+        // You can also display a message to the user or handle error in other ways
+      }
+  
+      // Handle any other errors globally
+      return Promise.reject(error);
+    }
+  );
 
 export default api;
