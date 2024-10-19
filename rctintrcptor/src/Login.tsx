@@ -26,8 +26,10 @@ const Login: React.FC = () => {
 
     try {
       const response = await api.post('/login', formData); // API login endpoint
-      //const { token } = response.data;
-
+      //const { authToken } = response.data.accessToken;
+      const { accessToken } = response.data;
+      const authoToken = response.data?.accessToken;
+      localStorage.setItem('authToken', authoToken);
       // Navigate to dashboard
       navigate('/dashboard');
     } catch (error) {
